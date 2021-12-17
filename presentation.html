@@ -4,7 +4,7 @@
     <title>Generalized additive latent and mixed models</title>
     <meta charset="utf-8" />
     <meta name="author" content="Øystein Sørensen" />
-    <script src="libs/header-attrs-2.9/header-attrs.js"></script>
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
   </head>
@@ -15,7 +15,7 @@ class: center, middle, inverse, title-slide
 # Generalized additive latent and mixed models
 ### Øystein Sørensen
 ### Center for Lifespan Changes in Brain and Cognition</br>University of Oslo
-### NORDSTAT2021
+### CMStatistics 2021
 
 ---
 
@@ -89,7 +89,7 @@ class: inverse, middle, center
 
 - A combination of generalized additive mixed models&lt;sup&gt;1&lt;/sup&gt; and generalized linear latent and mixed models&lt;sup&gt;2&lt;/sup&gt;.
 
-- Multilevel models with components varying at `\(L\)` levels. `\(\boldsymbol{\eta}^{(l)}\)` denotes a vector of latent variables varying at level `\(l\)`, and the vector of all latent variables belonging to a given level-2 unit is
+- Multilevel models with components varying at `\(L\)` levels. `\(\boldsymbol{\eta}^{(l)}\)` denotes a vector of latent variables (random effects) varying at level `\(l\)`, and the vector of all latent variables belonging to a given level-2 unit is
 
 `$$\boldsymbol{\eta}_{j} = 
 \begin{bmatrix}
@@ -113,18 +113,20 @@ Elementary units of observation distributed according to an exponential family.
 
 `$$f\left(y_{i} | \theta_{i}, \phi\right) = \exp\left\{\frac{y_{i}\theta_{i} - b\left(\theta_{i}\right)}{\phi} + c\left(y_{i}, \phi\right)  \right\}$$`
 
-All responses are stacked in the vector `\(\mathbf{y} = (y_{1}, y_{2}, \dots, y_{n})'\)`. Often the responses can be of completely different types, so dummy variables are used extensively in the regression models.
+- All responses are stacked in the vector `\(\mathbf{y} = (y_{1}, y_{2}, \dots, y_{n})'\)`. 
+
+- Responses can be of mixed type.
 
 
 ---
 
 # Part 2: Measurement Model
 
-Linking the observed responses to latent variables `\(\eta_{m}^{(l)}\)` of interest.
+
 
 `$$g\left\{E(y_{i})\right\} = \nu_{i} = \sum_{s=1}^{S} f_{s}\left(\mathbf{x}_{i}\right) + \sum_{l=2}^{L}\sum_{m=1}^{M_{l}} \eta_{m}^{(l)} \mathbf{z}^{(l)}_{mi}{}^{'}\boldsymbol{\lambda}_{m}^{(l)}$$`
 
-- Hierarchical model with `\(L\)` levels. Each level `\(l\)` has `\(M_{l}\)` latent variables. Factor loadings `\(\boldsymbol{\lambda}_{m}^{(l)}\)` link the latent variables to the observed measurements.
+- Hierarchical model with `\(L\)` levels. Each level `\(l\)` has `\(M_{l}\)` latent variables. Factor loadings `\(\boldsymbol{\lambda}_{m}^{(l)}\)` link the latent variables `\(\eta_{m}^{(l)}\)` to the observed measurements `\(y_{i}\)`.
 
 - Related to confirmatory factor analysis: `\(\mathbf{y} = \boldsymbol{\Lambda}\boldsymbol{\eta}\)`.
 
@@ -159,18 +161,23 @@ Structural model
 
 # Mixed Model Representation
 
-- Through a series of transformations, we show that GALAMMs with `\(L\)` are equivalent to nonlinear mixed models with `\(L+1\)` levels, with linear predictor
+- Through a series of transformations, we show that GALAMMs with `\(L\)` levels are equivalent to nonlinear mixed models with `\(L+1\)` levels, with linear predictor
 
 `$$\nu = f\left(X, \beta\right) + Z\left(\beta\right) \eta, ~~~ \eta \sim N(0, \Psi)$$`
 
 - Importantly, the mixed model representation does the spline smoothing&lt;sup&gt;1&lt;/sup&gt;.
 
-- Can fit it with a profile likelihood approach, utilizing efficient mixed model software (`lme4`/`nlme`).
+- Can fit it with a profile likelihood approach, utilizing efficient mixed model software (`lme4`/`nlme`)&lt;sup&gt;2&lt;/sup&gt;.
 
 - We use this to derive asymptotic covariance matrices for all functions and parameters.
 
 
-.footnote[[1] Following [Kimeldorf and Wahba (1970)](https://projecteuclid.org/journals/annals-of-mathematical-statistics/volume-41/issue-2/A-Correspondence-Between-Bayesian-Estimation-on-Stochastic-Processes-and-Smoothing/10.1214/aoms/1177697089.full).]
+.footnote[[1] Following [Kimeldorf and Wahba (1970)](https://projecteuclid.org/journals/annals-of-mathematical-statistics/volume-41/issue-2/A-Correspondence-Between-Bayesian-Estimation-on-Stochastic-Processes-and-Smoothing/10.1214/aoms/1177697089.full).
+
+[2] Using an algorithm proposed in [Jeon and Rabe-Hesketh (2012)](https://doi.org/10.3102/1076998611417628).
+]
+
+
 
 
 
@@ -247,7 +254,7 @@ Reduced form model
 
 is actually a nonlinear mixed model with 4 hierarchical levels.
 
-Fourth level is the smoothing.
+`\(\zeta_{k}^{(3)}, ~~ k=1,\dots,K,\)` are inverse smooothing parameters for `\(K\)` regression splines.
 
 
 ---
@@ -371,6 +378,21 @@ Conclusion:
 
 ---
 
+# Computation
+
+- Profile likelihood algorithm used here is convenient, but does not scale very well.
+
+- When the grouping structure is strictly hierarchical, it is possible to integrate out the latent variables from the likelihood function using adaptive quadrature rules&lt;sup&gt;1&lt;/sup&gt;.
+  
+  - We are currently working on formulating adaptive integration as a series of operations on sparse matrices. This will allow faster estimation, and also more accurate, as we don't have to rely on the Laplace approximation.
+  
+
+.footnote[[1] [Rabe-Hesketh, Skrondal, and Pickles (2005)](https://doi.org/10.1016/j.jeconom.2004.08.017)]  
+
+
+---
+
+
 
 class: inverse, middle, center
 
@@ -397,7 +419,11 @@ class: inverse, middle, center
 
 # References
 
+### Paper presented here
+
 Sørensen, Ø., Fjell, A. M., &amp; Walhovd, K. B. (2021). &lt;i&gt;Longitudinal modeling of age-dependent latent traits with generalized additive latent and mixed models&lt;/i&gt;. ArXiv:2105.02488 [Stat]. http://arxiv.org/abs/2105.02488
+
+### Relevant background
 
 Sørensen, Ø., Walhovd, K. B., &amp; Fjell, A. M. (2021). &lt;i&gt;A recipe for accurate estimation of lifespan brain trajectories, distinguishing longitudinal and cohort effects&lt;/i&gt;. &lt;b&gt;NeuroImage&lt;/b&gt;, 226, 117596. https://doi.org/10.1016/j.neuroimage.2020.117596
 
