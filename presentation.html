@@ -381,9 +381,9 @@ Conclusion:
 
 --
 
-Marginal log-likelihood is a nested integral
+Marginal log-likelihood is a nested integral 
 
-`$$l(\theta) = \int_{{\mathbb{R}}^{M_{L}}} \dots \int_{{\mathbb{R}}^{M_{2}}} \sum\log f(\theta | \boldsymbol{\eta}^{(2)},\dots, \boldsymbol{\eta}^{(L)}) \text{d}\boldsymbol{\eta}^{(2)} \dots \text{d}\boldsymbol{\eta}^{(L)}$$`
+`$$l(\theta) = \int \exp\{-\|\boldsymbol{\eta}^{(L)}\|^{2}\} \dots \int\exp\{-\|\boldsymbol{\eta}^{(2)}\|^{2}\} \\ \sum\log f(\theta | \boldsymbol{\eta}^{(2)},\dots, \boldsymbol{\eta}^{(L)}) \text{d}\boldsymbol{\eta}^{(2)} \dots \text{d}\boldsymbol{\eta}^{(L)}$$`
 Finding `\(\hat{\theta} = \text{argmax}\{l(\theta)\}\)` requires high-dimensional integration at each step of the optimization algorithm.
 
 
