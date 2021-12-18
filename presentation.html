@@ -36,17 +36,9 @@ In psychology and social science, you often have multiple observations measuring
 
 - Attitudes defined by survey responses.
 
-Classical tools
+Classical tools include factor analysis, item response theory, and structural equation models. 
 
-  - Factor analysis
-  
-  - Item response theory
-  
-  - Structural equation models.
-  
---
-
-Restrictive!!
+... which are often pretty restrictive
 
   - Parametric
   
@@ -57,13 +49,13 @@ Restrictive!!
 
 ---
 
-# Example
+# Motivating Example
 
-California verbal learning test of episodic memory
+California verbal learning test of **episodic memory**.
 
   - Five trials at a single test session.
   
-  - Latent episodic memory seems to depend smoothly on age.
+  - Latent episodic memory seems to depend smoothly (nonlinearly) on age.
   
   - Both between- and within-session learning effect
   
@@ -88,6 +80,13 @@ class: inverse, middle, center
 # General Framework
 
 - A combination of generalized additive mixed models&lt;sup&gt;1&lt;/sup&gt; and generalized linear latent and mixed models&lt;sup&gt;2&lt;/sup&gt;.
+
+&lt;center&gt;
+semiparametric + latent
+&lt;/center&gt;
+
+
+--
 
 - Multilevel models with components varying at `\(L\)` levels. `\(\boldsymbol{\eta}^{(l)}\)` denotes a vector of latent variables (random effects) varying at level `\(l\)`, and the vector of all latent variables belonging to a given level-2 unit is
 
@@ -129,8 +128,6 @@ Elementary units of observation distributed according to an exponential family.
 - Hierarchical model with `\(L\)` levels. Each level `\(l\)` has `\(M_{l}\)` latent variables. Factor loadings `\(\boldsymbol{\lambda}_{m}^{(l)}\)` link the latent variables `\(\eta_{m}^{(l)}\)` to the observed measurements `\(y_{i}\)`.
 
 - Related to confirmatory factor analysis: `\(\mathbf{y} = \boldsymbol{\Lambda}\boldsymbol{\eta}\)`.
-
---
 
 Smooth functions `\(f_{s}(\cdot)\)`, e.g., 
 
@@ -252,9 +249,7 @@ Reduced form model
 
 `$$\nu_{i} = \mathbf{d}_{ti}'\boldsymbol{\beta}_{t} + d_{ri}\beta_{r} + h\left(w_{jk}\right) \mathbf{d}_{ti}'\boldsymbol{\lambda} + \zeta_{jk}^{(2)}\mathbf{d}_{ti}'\boldsymbol{\lambda} + \zeta_{k}^{(3)} \mathbf{d}_{ti}'\boldsymbol{\lambda}$$`
 
-is actually a nonlinear mixed model with 4 hierarchical levels.
-
-`\(\zeta_{k}^{(3)}, ~~ k=1,\dots,K,\)` are inverse smooothing parameters for `\(K\)` regression splines.
+is actually a logistic nonlinear mixed model with 4 hierarchical levels.
 
 
 ---
@@ -343,7 +338,7 @@ Data from 4196 MRI scans of 1886 participants.
 
 # Socioeconomic Status and Hippocampus
 
-- We defined socioeconomic status (SES) as a latent variable measured by income and education level.
+- We defined socioeconomic status (SES) as a latent variable measured by income and education level. For children: parents' education and income.
 
 - Latent covariate model, with response `\(y_{i}\)` constructed by stacking income, education, and hippocampal volume:
 
@@ -384,6 +379,8 @@ Conclusion:
 
 - When the grouping structure is strictly hierarchical, it is possible to integrate out the latent variables from the likelihood function using adaptive quadrature rules&lt;sup&gt;1&lt;/sup&gt;.
 
+--
+
 Marginal log-likelihood is a nested integral
 
 `$$l(\theta) = \int_{{\mathbb{R}}^{M_{L}}} \dots \int_{{\mathbb{R}}^{M_{2}}} \sum\log f(\theta | \boldsymbol{\eta}^{(2)},\dots, \boldsymbol{\eta}^{(L)}) \text{d}\boldsymbol{\eta}^{(2)} \dots \text{d}\boldsymbol{\eta}^{(L)}$$`
@@ -401,7 +398,7 @@ Finding `\(\hat{\theta} = \text{argmax}\{l(\theta)\}\)` requires high-dimensiona
 
 - Formulate adaptive quadrature integration as a series of sparse matrix operations.
 
-- The number of smoothing parameters is typically high `\((\geq 10)\)`, making Cartesian product quadrature unfeasible. Spherical cubature rules of order 5 exist for arbitrary high dimensions, with a number of quadrature points growing quadratically in the dimension&lt;sup&gt;1&lt;/sup&gt;.
+- The number of smoothing parameters is typically high `\((\geq 10)\)`; Cartesian product quadrature intractable. Interesting alternative: Scalable spherical cubature rules growing quadratically in the dimension&lt;sup&gt;1&lt;/sup&gt;.
 
 
 ### Status
