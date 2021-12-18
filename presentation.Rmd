@@ -372,15 +372,39 @@ Conclusion:
 
 # Computation
 
-- Profile likelihood algorithm used here is convenient, but does not scale very well.
+- Profile likelihood algorithm used here is convenient, but does not scale very well, and also relies on Laplace approximation through the use of `lme4`.
 
 - When the grouping structure is strictly hierarchical, it is possible to integrate out the latent variables from the likelihood function using adaptive quadrature rules<sup>1</sup>.
+
+Marginal log-likelihood is a nested integral
+
+$$l(\theta) = \int_{{\mathbb{R}}^{M_{L}}} \dots \int_{{\mathbb{R}}^{M_{2}}} \sum\log f(\theta | \boldsymbol{\eta}^{(2)},\dots, \boldsymbol{\eta}^{(L)}) \text{d}\boldsymbol{\eta}^{(2)} \dots \text{d}\boldsymbol{\eta}^{(L)}$$
+Finding $\hat{\theta} = \text{argmax}\{l(\theta)\}$ requires high-dimensional integration at each step of the optimization algorithm.
+
+
+.footnote[[1] [Rabe-Hesketh, Skrondal, and Pickles (2005)](https://doi.org/10.1016/j.jeconom.2004.08.017), [Pinheiro and Chao (2006)](https://doi.org/10.1198/106186006X96962)]
+
   
-  - We are currently working on formulating adaptive integration as a series of operations on sparse matrices. This will allow faster estimation, and also more accurate, as we don't have to rely on the Laplace approximation.
+---
+
+# Computation - Work in progress
+
+### Idea
+
+- Formulate adaptive quadrature integration as a series of sparse matrix operations.
+
+- The number of smoothing parameters is typically high $(\geq 10)$, making Cartesian product quadrature unfeasible. Spherical cubature rules of order 5 exist for arbitrary high dimensions, with a number of quadrature points growing quadratically in the dimension<sup>1</sup>.
+
+
+### Status
+
+- Works well with two-level models, but this nothing new. R package `GLMMadaptive` offers this already.
+
+- Scalable extension to $L>2$ requires indicator matrices mapping latent variables at different levels, which is a bit tricky.
+
   
 
-.footnote[[1] [Rabe-Hesketh, Skrondal, and Pickles (2005)](https://doi.org/10.1016/j.jeconom.2004.08.017)]  
-
+.footnote[[1] [Lu and Darmofal (2004)](https://epubs.siam.org/doi/abs/10.1137/S1064827503426863)]
 
 ---
 
@@ -398,28 +422,12 @@ class: inverse, middle, center
 
   - R package: https://github.com/LCBC-UiO/galamm
   
-  - Extensive simulations suggest that asymptotic covariance matrices are highly accurate with moderate sample sizes.
+  - Extensive simulations suggest that estimates are close to unbiased and asymptotic covariance matrices are accurate with moderate sample sizes.
 
-- Further work
-
-  - Faster algorithms for integration the latent variable distribution.
-  
-  - Allow smooth functions to depend on latent variables.
-
-
----
-
-# References
-
-### Paper presented here
+### Preprint
 
 Sørensen, Ø., Fjell, A. M., & Walhovd, K. B. (2021). <i>Longitudinal modeling of age-dependent latent traits with generalized additive latent and mixed models</i>. ArXiv:2105.02488 [Stat]. http://arxiv.org/abs/2105.02488
 
-### Relevant background
-
-Sørensen, Ø., Walhovd, K. B., & Fjell, A. M. (2021). <i>A recipe for accurate estimation of lifespan brain trajectories, distinguishing longitudinal and cohort effects</i>. <b>NeuroImage</b>, 226, 117596. https://doi.org/10.1016/j.neuroimage.2020.117596
-
-Sørensen, Ø., Brandmaier, A. M., Macià, D., Ebmeier, K., Ghisletta, P., Kievit, R. A., Mowinckel, A. M., Walhovd, K. B., Westerhausen, R., & Fjell, A. (2021). <i>Meta-analysis of generalized additive models in neuroimaging studies</i>. <b>NeuroImage</b>, 224, 117416. https://doi.org/10.1016/j.neuroimage.2020.117416
 
 
 ---
